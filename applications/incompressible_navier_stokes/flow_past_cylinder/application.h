@@ -398,7 +398,7 @@ private:
     pp_data.output_data.time_control_data.trigger_interval = (end_time - start_time) / 20.0;
     pp_data.output_data.directory          = this->output_parameters.directory + "vtu/";
     pp_data.output_data.filename           = name;
-    pp_data.output_data.write_divergence   = true;
+    pp_data.output_data.write_divergence   = this->param.grid.element_type==ElementType::Hypercube;
     pp_data.output_data.write_higher_order = false;
     pp_data.output_data.write_processor_id = true;
     pp_data.output_data.write_surface_mesh = true;
