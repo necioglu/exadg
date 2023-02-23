@@ -152,11 +152,9 @@ MultigridPreconditioner<dim, Number>::fill_matrix_free_data(
   }
   else
   {
-    AssertThrow(
-      false,
-      dealii::ExcMessage(
-        "Only pure hypercube or pure simplex meshes are implemented for "
-        "MomentumPreconditioner::Multigrid."));
+    AssertThrow(false,
+                dealii::ExcMessage("Only pure hypercube or pure simplex meshes are implemented for "
+                                   "MomentumPreconditioner::Multigrid."));
   }
 }
 
