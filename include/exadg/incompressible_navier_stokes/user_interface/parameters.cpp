@@ -540,6 +540,26 @@ Parameters::check(dealii::ConditionalOStream const & pcout) const
     AssertThrow(turbulence_model_constant > 0,
                 dealii::ExcMessage("parameter must be greater than zero"));
   }
+
+  // SIMPLEX ELEMENTS
+  if(grid.element_type == ElementType::Simplex)
+  {
+    AssertThrow(temporal_discretization == TemporalDiscretization::BDFCoupledSolution,
+                dealii::ExcMessage("Only BDFCoupledSolution is supported for simplex elements."));
+
+    AssertThrow(preconditioner_pressure_block == SchurComplementPreconditioner::None or
+                  preconditioner_pressure_block == SchurComplementPreconditioner::LaplaceOperator,
+                dealii::ExcMessage(enum_to_string(preconditioner_pressure_block) +
+                                   " is not supported with simplex elements."));
+
+    AssertThrow(not(preconditioner_velocity_block == MomentumPreconditioner::InverseMassMatrix),
+                dealii::ExcMessage(enum_to_string(preconditioner_velocity_block) +
+                                   " is not supported for simplex elements."));
+
+    AssertThrow(not(preconditioner_projection == PreconditionerProjection::InverseMassMatrix),
+                dealii::ExcMessage(enum_to_string(preconditioner_projection) +
+                                   " is not supported for simplex elements."));
+  }
 }
 
 bool

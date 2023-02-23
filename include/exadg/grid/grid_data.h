@@ -44,6 +44,9 @@ struct GridData
   void
   check() const
   {
+    if(element_type == ElementType::Simplex)
+      AssertThrow(not(triangulation_type == TriangulationType::Distributed),
+                  dealii::ExcMessage("Can't use simplex elements with Distributed triangulation."))
   }
 
   void
