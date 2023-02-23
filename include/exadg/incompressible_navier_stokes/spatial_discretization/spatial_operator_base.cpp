@@ -340,9 +340,9 @@ SpatialOperatorBase<dim, Number>::distribute_dofs()
     }
   }
 
-  unsigned int ndofs_per_cell_velocity=fe_u->n_dofs_per_cell();
+  unsigned int ndofs_per_cell_velocity = fe_u->n_dofs_per_cell();
 
-  unsigned int const ndofs_per_cell_pressure =fe_p->n_dofs_per_cell();
+  unsigned int const ndofs_per_cell_pressure = fe_p->n_dofs_per_cell();
 
   pcout << "Velocity:" << std::endl;
   if(param.spatial_discretization == SpatialDiscretization::L2)
