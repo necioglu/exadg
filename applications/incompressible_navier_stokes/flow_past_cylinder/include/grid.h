@@ -122,8 +122,8 @@ set_boundary_ids(dealii::Triangulation<dim> & tria, bool compute_in_2d)
   }
 }
 
-void do_create_coarse_triangulation(dealii::Triangulation<2> & tria,
-                                    bool const                 compute_in_2d = true)
+void
+do_create_coarse_triangulation(dealii::Triangulation<2> & tria, bool const compute_in_2d = true)
 {
   AssertThrow(std::abs((X_2 - X_1) - 2.0 * (X_C - X_1)) < 1.0e-12,
               dealii::ExcMessage("Geometry parameters X_1, X_2, X_C invalid!"));
@@ -674,7 +674,8 @@ void do_create_coarse_triangulation(dealii::Triangulation<2> & tria,
 }
 
 
-void do_create_coarse_triangulation(dealii::Triangulation<3> & tria)
+void
+do_create_coarse_triangulation(dealii::Triangulation<3> & tria)
 {
   dealii::Triangulation<2> tria_2d;
   do_create_coarse_triangulation(tria_2d, false);
@@ -1017,12 +1018,13 @@ double const h_x_2 = (L - X_2) / nele_x_right;
 double const h_x_1 = D / nele_x_middle_middle;
 double const h_x_0 = (X_1 - X_0) / nele_x_left;
 
-void do_create_coarse_triangulation(dealii::Triangulation<2> &        tria,
-                                    std::vector<unsigned int> const & repetitions,
-                                    dealii::Point<2> const &          p1,
-                                    dealii::Point<2> const &          p2,
-                                    ElementType const &               element_type,
-                                    bool const                        colorize = false)
+void
+do_create_coarse_triangulation(dealii::Triangulation<2> &        tria,
+                               std::vector<unsigned int> const & repetitions,
+                               dealii::Point<2> const &          p1,
+                               dealii::Point<2> const &          p2,
+                               ElementType const &               element_type,
+                               bool const                        colorize = false)
 {
   if(element_type == ElementType::Hypercube)
   {
@@ -1037,14 +1039,15 @@ void do_create_coarse_triangulation(dealii::Triangulation<2> &        tria,
     AssertThrow(false, dealii::ExcMessage("Only hypercube or simplex elements are supported."));
 }
 
-void create_trapezoid(dealii::Triangulation<2> & tria,
-                      std::vector<unsigned int>  ref,
-                      dealii::Point<2> const     x_0,
-                      double const               length,
-                      double const               height,
-                      double const               max_shift,
-                      double const               min_shift,
-                      ElementType                element_type)
+void
+create_trapezoid(dealii::Triangulation<2> & tria,
+                 std::vector<unsigned int>  ref,
+                 dealii::Point<2> const     x_0,
+                 double const               length,
+                 double const               height,
+                 double const               max_shift,
+                 double const               min_shift,
+                 ElementType                element_type)
 {
   dealii::Triangulation<2> tmp;
 
@@ -1114,9 +1117,10 @@ set_boundary_ids(dealii::Triangulation<dim> & tria)
 }
 
 template<unsigned int dim>
-void do_create_coarse_triangulation(dealii::Triangulation<2> & triangulation,
-                                    ElementType                element_type,
-                                    bool                       is_2d = true)
+void
+do_create_coarse_triangulation(dealii::Triangulation<2> & triangulation,
+                               ElementType                element_type,
+                               bool                       is_2d = true)
 {
   dealii::Triangulation<2>::MeshSmoothing const mesh_smoothing = triangulation.get_mesh_smoothing();
 
@@ -1428,8 +1432,8 @@ void do_create_coarse_triangulation(dealii::Triangulation<2> & triangulation,
 }
 
 template<unsigned int dim>
-void do_create_coarse_triangulation(dealii::Triangulation<3> & triangulation,
-                                    ElementType                element_type)
+void
+do_create_coarse_triangulation(dealii::Triangulation<3> & triangulation, ElementType element_type)
 {
   dealii::Triangulation<2> tria_2D;
 
