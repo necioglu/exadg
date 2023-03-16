@@ -26,15 +26,6 @@ InverseMassOperator<dim, n_components, Number>::initialize(
   cellwise_inverse_mass_not_available =
     matrix_free->get_dof_handler(dof_index).get_triangulation().all_reference_cells_are_simplex();
 
-  if(cellwise_inverse_mass_not_available)
-  {
-    initialize_inverse_mass_operator_with_block_jacobi();
-  }
-}
-template<int dim, int n_components, typename Number>
-void
-InverseMassOperator<dim, n_components, Number>::initialize_inverse_mass_operator_with_block_jacobi()
-{
   // initialize mass operator
   dealii::AffineConstraints<Number> const & constraint =
     matrix_free->get_affine_constraints(dof_index);
@@ -43,25 +34,11 @@ InverseMassOperator<dim, n_components, Number>::initialize_inverse_mass_operator
   mass_operator_data.dof_index  = dof_index;
   mass_operator_data.quad_index = quad_index;
 
-  mass_operator_data.implement_block_diagonal_preconditioner_matrix_free = true;
-  mass_operator_data.solver_block_diagonal                               = Elementwise::Solver::CG;
-  mass_operator_data.use_cell_based_loops=true;
-  mass_operator_data.preconditioner_block_diagonal = Elementwise::Preconditioner::None;
-  mass_operator_data.solver_data_block_diagonal    = SolverData(10000,1e-20,1e-10,1000);
-
-  MassOperatorData<dim> mass_operator_data2;
-  mass_operator_data2.dof_index  = dof_index;
-  mass_operator_data2.quad_index = quad_index;
-
-  mass_operator_data2.implement_block_diagonal_preconditioner_matrix_free = false;
-
-  mass_operator2.initialize(*matrix_free, constraint, mass_operator_data2);
-
-  // build a BlockJacobiPreconditioner and use the vmult(dst,src) for applying the inverse mass
-  // operator on  source the vector
-  mass_preconditioner2 =
-    std::make_shared<BlockJacobiPreconditioner<MassOperator<dim, n_components, Number>>>(
-      mass_operator2);
+  mass_operator_data.implement_block_diagonal_preconditioner_matrix_free = false;
+  mass_operator_data.solver_block_diagonal         = Elementwise::Solver::GMRES;
+  mass_operator_data.use_cell_based_loops          = true;
+  mass_operator_data.preconditioner_block_diagonal = Elementwise::Preconditioner::InverseMassMatrix;
+  mass_operator_data.solver_data_block_diagonal    = SolverData(1000, 1e-12, 1e-20, 1000);
 
   mass_operator.initialize(*matrix_free, constraint, mass_operator_data);
 
@@ -81,30 +58,15 @@ InverseMassOperator<dim, n_components, Number>::apply(
   dst_temp.zero_out_ghost_values();
   dst.zero_out_ghost_values();
 
-  if(cellwise_inverse_mass_not_available)
-  {
-    std::cout<<"dof_index: "<<dof_index<<std::endl;
-    dealii::Timer timer;
+  VectorType temp = src;
+  mass_preconditioner->vmult(dst_temp, temp);
 
-    mass_preconditioner->vmult(dst, src);
-    timer.stop();
+  matrix_free->cell_loop(&This::cell_loop, this, dst, src);
 
-    std::cout<<"Time needed for CG: "<< timer.wall_time() << " seconds.\n";
-    timer.reset();
-
-    timer.start();
-    mass_preconditioner2->vmult(dst_temp, src);
-    timer.stop();
-
-    std::cout<<"Time needed for Matrices: "<< timer.wall_time() << " seconds.\n";
-
-    dst_temp-=dst;
-    std::cout<<"difference between the methods is: "<<dst_temp.l2_norm()<<" size is: "<<dst_temp.size()<<std::endl;
-  }
-  else
-  {
-    matrix_free->cell_loop(&This::cell_loop, this, dst, src);
-  }
+  dst_temp -= dst;
+  if(dst_temp.linfty_norm() / dst.linfty_norm() > 1e-14)
+    std::cout << "difference between the methods is: " << dst_temp.linfty_norm() / dst.linfty_norm()
+              << " size is: " << dst_temp.size() << std::endl;
 }
 template<int dim, int n_components, typename Number>
 void
@@ -155,4 +117,4 @@ template class InverseMassOperator<2, 4, double>;
 template class InverseMassOperator<3, 5, float>;
 template class InverseMassOperator<3, 5, double>;
 
-}
+} // namespace ExaDG
