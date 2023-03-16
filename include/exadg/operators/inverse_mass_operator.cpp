@@ -34,7 +34,7 @@ InverseMassOperator<dim, n_components, Number>::initialize(
   mass_operator_data.dof_index  = dof_index;
   mass_operator_data.quad_index = quad_index;
 
-  mass_operator_data.implement_block_diagonal_preconditioner_matrix_free = false;
+  mass_operator_data.implement_block_diagonal_preconditioner_matrix_free = true;
   mass_operator_data.solver_block_diagonal         = Elementwise::Solver::GMRES;
   mass_operator_data.use_cell_based_loops          = true;
   mass_operator_data.preconditioner_block_diagonal = Elementwise::Preconditioner::InverseMassMatrix;

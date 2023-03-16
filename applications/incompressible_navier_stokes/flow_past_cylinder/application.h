@@ -194,7 +194,7 @@ private:
     this->param.grid.triangulation_type = TriangulationType::FullyDistributed;
     this->param.grid.mapping_degree     = this->param.degree_u;
     this->param.degree_p                = DegreePressure::MixedOrder;
-    this->param.grid.element_type       = ElementType::Simplex;
+    this->param.grid.element_type       = ElementType::Hypercube;
     this->param.grid.multigrid          = MultigridVariant::GlobalCoarsening;
     this->param.grid.file_name= this->grid_parameters.file_name;
 
@@ -358,7 +358,7 @@ private:
     GridUtilities::create_fine_and_coarse_triangulations<dim>(*this->grid,
                                                               this->param.grid,
                                                               this->param.involves_h_multigrid(),
-                                                              read_triangulation);
+                                                              lambda_create_triangulation);
   }
 
   void
