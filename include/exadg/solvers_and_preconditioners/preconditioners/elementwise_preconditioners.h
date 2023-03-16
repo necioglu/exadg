@@ -58,25 +58,21 @@ private:
 };
 
 template<typename Number>
-class PreconditionerIdentity : public PreconditionerBase<Number>
+class PreconditionerIdentity : public PreconditionerBase<dealii::VectorizedArray<Number>>
 {
 public:
   PreconditionerIdentity(unsigned int const size) : M(size)
   {
   }
 
-  virtual ~PreconditionerIdentity()
-  {
-  }
-
-  virtual void
+  void
   setup(unsigned int const /* cell */)
   {
     // nothing to do
   }
 
-  virtual void
-  vmult(Number * dst, Number const * src) const
+  void
+  vmult(dealii::VectorizedArray<Number> * dst, dealii::VectorizedArray<Number> const * src) const
   {
     Number one;
     one = 1.0;

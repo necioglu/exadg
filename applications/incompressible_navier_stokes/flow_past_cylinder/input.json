@@ -1,7 +1,7 @@
 {
     "General": {
         "Precision": "double",
-        "Dim": "2",
+        "Dim": "3",
         "IsTest": "false"
     },
     "SpatialResolution": {
@@ -18,6 +18,9 @@
         "TestCase": "3",
         "CylinderType": "circular",
         "CFL": "0.35"
+    },
+    "Grid": {
+        "FileName": "/scratch/necioglu/workspace/cubit_files/fpc_circular_3d.e"
     },
     "Output": {
         "OutputDirectory": "output/flow_past_cylinder/",

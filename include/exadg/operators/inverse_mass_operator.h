@@ -50,83 +50,25 @@ private:
   typedef std::pair<unsigned int, unsigned int> Range;
 
 public:
-  InverseMassOperator() : matrix_free(nullptr), dof_index(0), quad_index(0)
-  {
-  }
+  InverseMassOperator();
 
   void
   initialize(dealii::MatrixFree<dim, Number> const & matrix_free_in,
              unsigned int const                      dof_index_in,
-             unsigned int const                      quad_index_in)
-  {
-    this->matrix_free = &matrix_free_in;
-    dof_index         = dof_index_in;
-    quad_index        = quad_index_in;
-
-    cellwise_inverse_mass_not_available =
-      matrix_free->get_dof_handler(dof_index).get_triangulation().all_reference_cells_are_simplex();
-
-    if(cellwise_inverse_mass_not_available)
-    {
-      initialize_inverse_mass_operator_with_block_jacobi();
-    }
-  }
+             unsigned int const                      quad_index_in);
 
   void
-  initialize_inverse_mass_operator_with_block_jacobi()
-  {
-    // initialize mass operator
-    dealii::AffineConstraints<Number> const & constraint =
-      matrix_free->get_affine_constraints(dof_index);
-
-    MassOperatorData<dim> mass_operator_data;
-    mass_operator_data.dof_index  = dof_index;
-    mass_operator_data.quad_index = quad_index;
-
-    mass_operator.initialize(*matrix_free, constraint, mass_operator_data);
-
-    // build a BlockJacobiPreconditioner and use the vmult(dst,src) for applying the inverse mass
-    // operator on  source the vector
-    mass_preconditioner =
-      std::make_shared<BlockJacobiPreconditioner<MassOperator<dim, n_components, Number>>>(
-        mass_operator);
-  }
+  initialize_inverse_mass_operator_with_block_jacobi();
 
   void
-  apply(VectorType & dst, VectorType const & src) const
-  {
-    dst.zero_out_ghost_values();
-
-    if(cellwise_inverse_mass_not_available)
-    {
-      mass_preconditioner->vmult(dst, src);
-    }
-    else
-    {
-      matrix_free->cell_loop(&This::cell_loop, this, dst, src);
-    }
-  }
+  apply(VectorType & dst, VectorType const & src) const;
 
 private:
   void
   cell_loop(dealii::MatrixFree<dim, Number> const &,
             VectorType &       dst,
             VectorType const & src,
-            Range const &      cell_range) const
-  {
-    Integrator          integrator(*matrix_free, dof_index, quad_index);
-    CellwiseInverseMass inverse(integrator);
-
-    for(unsigned int cell = cell_range.first; cell < cell_range.second; ++cell)
-    {
-      integrator.reinit(cell);
-      integrator.read_dof_values(src, 0);
-
-      inverse.apply(integrator.begin_dof_values(), integrator.begin_dof_values());
-
-      integrator.set_dof_values(dst, 0);
-    }
-  }
+            Range const &      cell_range) const;
 
   dealii::MatrixFree<dim, Number> const * matrix_free;
 
@@ -139,10 +81,16 @@ private:
 
   std::shared_ptr<PreconditionerBase<Number>> mass_preconditioner;
 
+    MassOperator<dim, n_components, Number> mass_operator2;
+
+  std::shared_ptr<PreconditionerBase<Number>> mass_preconditioner2;
+
   bool cellwise_inverse_mass_not_available;
 
   bool use_solver;
 };
+
+
 
 } // namespace ExaDG
 

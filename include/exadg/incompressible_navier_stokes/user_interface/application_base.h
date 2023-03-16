@@ -42,6 +42,7 @@
 #include <exadg/poisson/user_interface/parameters.h>
 #include <exadg/postprocessor/output_parameters.h>
 #include <exadg/utilities/resolution_parameters.h>
+#include <exadg/grid/grid_parameters.h>
 
 namespace ExaDG
 {
@@ -57,6 +58,7 @@ public:
   virtual void
   add_parameters(dealii::ParameterHandler & prm)
   {
+    grid_parameters.add_parameters(prm);
     output_parameters.add_parameters(prm);
   }
 
@@ -221,6 +223,8 @@ protected:
   std::string parameter_file;
 
   unsigned int n_subdivisions_1d_hypercube;
+
+  GridParameters grid_parameters;
 
   OutputParameters output_parameters;
 

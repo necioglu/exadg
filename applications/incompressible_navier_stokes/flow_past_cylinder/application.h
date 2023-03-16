@@ -169,7 +169,7 @@ private:
 
     // TEMPORAL DISCRETIZATION
     this->param.solver_type                     = SolverType::Unsteady;
-    this->param.temporal_discretization         = TemporalDiscretization::BDFDualSplittingScheme;
+    this->param.temporal_discretization         = TemporalDiscretization::BDFCoupledSolution;
     this->param.treatment_of_convective_term    = TreatmentOfConvectiveTerm::Explicit;
     this->param.order_time_integrator           = 3;
     this->param.start_with_low_order            = true;
@@ -182,8 +182,7 @@ private:
     this->param.time_step_size_max              = 1.0e-2;
 
     // output of solver information
-    this->param.solver_info_data.interval_time =
-      (this->param.end_time - this->param.start_time) / 8.0;
+    this->param.solver_info_data.interval_time_steps = 1;
 
     // pseudo-timestepping for steady-state problems
     this->param.convergence_criterion_steady_problem =
@@ -192,11 +191,12 @@ private:
     this->param.rel_tol_steady = 1.e-8;
 
     // SPATIAL DISCRETIZATION
-    this->param.grid.triangulation_type = TriangulationType::Distributed;
+    this->param.grid.triangulation_type = TriangulationType::FullyDistributed;
     this->param.grid.mapping_degree     = this->param.degree_u;
     this->param.degree_p                = DegreePressure::MixedOrder;
-    this->param.grid.element_type       = ElementType::Hypercube;
-    this->param.grid.multigrid          = MultigridVariant::LocalSmoothing;
+    this->param.grid.element_type       = ElementType::Simplex;
+    this->param.grid.multigrid          = MultigridVariant::GlobalCoarsening;
+    this->param.grid.file_name= this->grid_parameters.file_name;
 
     // convective term
     if(this->param.formulation_convective_term == FormulationConvectiveTerm::DivergenceFormulation)
@@ -302,10 +302,9 @@ private:
     this->param.preconditioner_coupled = PreconditionerCoupled::BlockTriangular;
 
     // preconditioner velocity/momentum block
-    this->param.preconditioner_velocity_block = MomentumPreconditioner::Multigrid;
-    this->param.multigrid_operator_type_velocity_block =
-      MultigridOperatorType::ReactionConvectionDiffusion;
-    this->param.multigrid_data_velocity_block.type                   = MultigridType::phMG;
+    this->param.preconditioner_velocity_block          = MomentumPreconditioner::Multigrid;
+    this->param.multigrid_operator_type_velocity_block = MultigridOperatorType::ReactionDiffusion;
+    this->param.multigrid_data_velocity_block.type     = MultigridType::phMG;
     this->param.multigrid_data_velocity_block.smoother_data.smoother = MultigridSmoother::Jacobi;
     this->param.multigrid_data_velocity_block.smoother_data.preconditioner =
       PreconditionerSmoother::BlockJacobi;
@@ -317,8 +316,7 @@ private:
       MultigridCoarseGridPreconditioner::BlockJacobi;
 
     // preconditioner Schur-complement block
-    this->param.preconditioner_pressure_block =
-      SchurComplementPreconditioner::PressureConvectionDiffusion;
+    this->param.preconditioner_pressure_block      = SchurComplementPreconditioner::CahouetChabard;
     this->param.multigrid_data_pressure_block.type = MultigridType::cphMG;
   }
 
@@ -342,10 +340,25 @@ private:
           tria.refine_global(global_refinements);
       };
 
+    auto const read_triangulation =
+      [&](dealii::Triangulation<dim, dim> & tria,
+          unsigned int const                global_refinements,
+          std::vector<unsigned int> const & vector_local_refinements) {
+        GridUtilities::read_external_triangulation(tria,this->param.grid);
+
+        if(vector_local_refinements.size() > 0)
+          refine_local(tria, vector_local_refinements);
+
+        if(global_refinements > 0)
+          tria.refine_global(global_refinements);
+
+        CircularCylinder::set_boundary_ids(tria,false);
+      };
+
     GridUtilities::create_fine_and_coarse_triangulations<dim>(*this->grid,
                                                               this->param.grid,
                                                               this->param.involves_h_multigrid(),
-                                                              lambda_create_triangulation);
+                                                              read_triangulation);
   }
 
   void

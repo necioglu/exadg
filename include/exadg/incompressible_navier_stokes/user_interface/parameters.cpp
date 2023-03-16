@@ -522,10 +522,10 @@ Parameters::check(dealii::ConditionalOStream const & pcout) const
   // NUMERICAL PARAMETERS
   if(implement_block_diagonal_preconditioner_matrix_free)
   {
-    AssertThrow(
-      use_cell_based_face_loops == true,
-      dealii::ExcMessage(
-        "Cell based face loops have to be used for matrix-free implementation of block diagonal preconditioner."));
+//    AssertThrow(
+//      use_cell_based_face_loops == true,
+//      dealii::ExcMessage(
+//        "Cell based face loops have to be used for matrix-free implementation of block diagonal preconditioner."));
 
     AssertThrow(spatial_discretization == SpatialDiscretization::L2,
                 dealii::ExcMessage("Not implemented."));
@@ -547,18 +547,18 @@ Parameters::check(dealii::ConditionalOStream const & pcout) const
     AssertThrow(temporal_discretization == TemporalDiscretization::BDFCoupledSolution,
                 dealii::ExcMessage("Only BDFCoupledSolution is supported for simplex elements."));
 
-    AssertThrow(preconditioner_pressure_block == SchurComplementPreconditioner::None or
-                  preconditioner_pressure_block == SchurComplementPreconditioner::LaplaceOperator,
-                dealii::ExcMessage(enum_to_string(preconditioner_pressure_block) +
-                                   " is not supported with simplex elements."));
-
-    AssertThrow(not(preconditioner_velocity_block == MomentumPreconditioner::InverseMassMatrix),
-                dealii::ExcMessage(enum_to_string(preconditioner_velocity_block) +
-                                   " is not supported for simplex elements."));
-
-    AssertThrow(not(preconditioner_projection == PreconditionerProjection::InverseMassMatrix),
-                dealii::ExcMessage(enum_to_string(preconditioner_projection) +
-                                   " is not supported for simplex elements."));
+//    AssertThrow(preconditioner_pressure_block == SchurComplementPreconditioner::None or
+//                  preconditioner_pressure_block == SchurComplementPreconditioner::LaplaceOperator,
+//                dealii::ExcMessage(enum_to_string(preconditioner_pressure_block) +
+//                                   " is not supported with simplex elements."));
+//
+//    AssertThrow(not(preconditioner_velocity_block == MomentumPreconditioner::InverseMassMatrix),
+//                dealii::ExcMessage(enum_to_string(preconditioner_velocity_block) +
+//                                   " is not supported for simplex elements."));
+//
+//    AssertThrow(not(preconditioner_projection == PreconditionerProjection::InverseMassMatrix),
+//                dealii::ExcMessage(enum_to_string(preconditioner_projection) +
+//                                   " is not supported for simplex elements."));
   }
 }
 

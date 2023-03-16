@@ -93,6 +93,7 @@ SET(TARGET_SRC
      include/exadg/operators/mass_operator.cpp
      include/exadg/operators/rhs_operator.cpp
      include/exadg/operators/navier_stokes_calculators.cpp
+     include/exadg/operators/inverse_mass_operator.cpp
      # Poisson equation
      include/exadg/poisson/user_interface/enum_types.cpp
      include/exadg/poisson/user_interface/parameters.cpp
