@@ -170,10 +170,10 @@ vector_init(value_type * vector, unsigned int const size)
     vector[i] = 0.0;
 }
 
-template<typename value_type, typename Number>
+template<typename value_type>
 void
 equ(value_type *       dst,
-    Number const   scalar,
+    value_type const   scalar,
     value_type const * in_vector,
     unsigned int const size)
 {
@@ -336,7 +336,7 @@ SolverCG<value_type, Matrix, Preconditioner>::solve(Matrix const *         matri
     value_type r_times_y_new = inner_product(r, v, M);
 
     // beta = (r^T*y)_new / (r^T*y)
-    adjust_division_by_zero(r_times_y);
+    // adjust_division_by_zero(r_times_y);
     value_type beta = r_times_y_new / r_times_y;
 
     // p <- y + beta*p

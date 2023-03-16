@@ -1532,7 +1532,7 @@ SpatialOperatorBase<dim, Number>::setup_projection_solver()
 
       if(param.preconditioner_projection == PreconditionerProjection::None)
       {
-        typedef Elementwise::PreconditionerIdentity<Number> IDENTITY;
+        typedef Elementwise::PreconditionerIdentity<dealii::VectorizedArray<Number>> IDENTITY;
 
         elementwise_preconditioner_projection =
           std::make_shared<IDENTITY>(elementwise_projection_operator->get_problem_size());
