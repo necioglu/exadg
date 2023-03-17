@@ -210,7 +210,7 @@ private:
         // in order to apply optimizations (e.g., one does not need to evaluate the residual in
         // the first iteration of the smoother).
         (*smoother)[level]->vmult(solution[level], defect[level]);
-
+        std::cout.precision(std::numeric_limits< double>::max_digits10);
         std::cout<<"norm of solution on level "<<level<<" is: "<<solution[level].l2_norm()<<std::endl;
       }
 
