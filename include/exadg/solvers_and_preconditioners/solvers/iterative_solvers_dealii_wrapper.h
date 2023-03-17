@@ -147,6 +147,7 @@ public:
     {
       solver.solve(underlying_operator, dst, rhs, preconditioner);
     }
+    std::cout<<"norm of solution after CG iteration is: "<<dst.l2_norm()<<std::endl;
 
     AssertThrow(std::isfinite(solver_control.last_value()),
                 dealii::ExcMessage("Solver contained NaN of Inf values"));

@@ -91,6 +91,7 @@ Driver<dim, Number>::solve()
   // calculate right-hand side
   timer.restart();
   poisson->pde_operator->rhs(rhs);
+  std::cout<<"norm of rhs: "<<rhs.l2_norm()<<std::endl;
   timer_tree.insert({"Poisson", "Right-hand side"}, timer.wall_time());
 
   // solve linear system of equations

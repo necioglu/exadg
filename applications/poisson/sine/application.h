@@ -29,7 +29,7 @@ namespace ExaDG
 namespace Poisson
 {
 double const FREQUENCY            = 3.0 * dealii::numbers::PI;
-bool const   USE_NEUMANN_BOUNDARY = true;
+bool const   USE_NEUMANN_BOUNDARY = false;
 
 template<int dim>
 class Solution : public dealii::Function<dim>
@@ -150,7 +150,7 @@ private:
     this->param.right_hand_side = true;
 
     // SPATIAL DISCRETIZATION
-    this->param.grid.element_type = ElementType::Hypercube; // Simplex;
+    this->param.grid.element_type = ElementType::Simplex; // Simplex;
     if(this->param.grid.element_type == ElementType::Simplex)
     {
       this->param.grid.triangulation_type = TriangulationType::FullyDistributed;

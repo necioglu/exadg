@@ -184,6 +184,7 @@ private:
 #endif
 
       (*coarse)(level, solution[level], defect[level]);
+      std::cout<<"norm of solution on coarsest level "<<level<<" is: "<<solution[level].l2_norm()<<std::endl;
 
 #if ENABLE_TIMING
       timer_tree->insert({"Multigrid", "level " + std::to_string(level)}, timer.wall_time());
@@ -209,12 +210,15 @@ private:
         // in order to apply optimizations (e.g., one does not need to evaluate the residual in
         // the first iteration of the smoother).
         (*smoother)[level]->vmult(solution[level], defect[level]);
+
+        std::cout<<"norm of solution on level "<<level<<" is: "<<solution[level].l2_norm()<<std::endl;
       }
 
       // restriction
       (*matrix)[level]->vmult_interface_down(t[level], solution[level]);
       t[level].sadd(-1.0, 1.0, defect[level]);
       transfer.restrict_and_add(level, defect[level - 1], t[level]);
+      std::cout<<"norm of solution on level "<<level<<" after restriction is: "<<solution[level].l2_norm()<<std::endl;
 
 #if ENABLE_TIMING
       timer_tree->insert({"Multigrid", "level " + std::to_string(level)}, timer.wall_time());
@@ -229,9 +233,11 @@ private:
 
       // prolongation
       transfer.prolongate_and_add(level, solution[level], solution[level - 1]);
+      std::cout<<"norm of solution after prolongation on level "<<level<<" is: "<<solution[level].l2_norm()<<std::endl;
 
       // post-smoothing
       (*smoother)[level]->step(solution[level], defect[level]);
+      std::cout<<"norm of solution after post-smoothing on level "<<level<<" is: "<<solution[level].l2_norm()<<std::endl;
 
 #if ENABLE_TIMING
       timer_tree->insert({"Multigrid", "level " + std::to_string(level)}, timer.wall_time());
